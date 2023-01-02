@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="youtube.css">
+    <title>Youtube Clone</title>
+</head>
+
+<body>
+    <div id="pop-screen">
+        <label id="click-x">X</label>
+        <div id="container">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <h5>Listening...</h5>
+        </div>
+        <input type="text" id="mic-field" readonly>
+    </div>
+
+    <div id="fix"></div>
+    <div class="header">
+        <div id="main-logo">
+            <img src="My project.png">
+            <label>MY SHOW</label>
+        </div>
+
+
+        <div class="search center">
+            <form>
+                <input type="text" placeholder="Search" class="sMearch" />
+                <button type="button"><i class="material-icons" id="getSearch" type="click">search</i></button>
+            </form>
+            <i class="material-icons mic">mic</i>
+        </div>
+    </div>
+    </div>
+    <script>
+        function fix() {
+            document.querySelector(".column").style.height = document.querySelector("main").style.height;
+            document.querySelector("#player").style.height = document.querySelector("main").style.height;
+        }
+
+        let recognition = new window.webkitSpeechRecognition();
+        recognition.addEventListener('result', (e) => {
+            console.log(e);
+            let c = document.querySelector("#mic-field");
+            let d = document.querySelector(".sMearch");
+            c.value = e.results[0][0].transcript;
+            d.value = e.results[0][0].transcript;
+            console.log(d.value);
+        });
+
+        document.querySelector(".mic").addEventListener('click', (e) => {
+            recognition.start();
+            document.querySelector(".header").style.height = 0;
+            document.querySelector(".header").style.opacity = 0;
+            document.querySelector("#pop-screen").style.opacity = 1;
+            document.querySelector("#pop-screen").style.backgroundColor = 'black';
+            document.querySelector("#pop-screen").style.width = "500px";
+            document.querySelector("#pop-screen").style.height = "500px";
+            document.querySelector("#pop-screen").style.position = "absolute";
+            document.querySelector("#pop-screen").style.left = "375px";
+            document.querySelector("#pop-screen").style.top = "50px";
+            document.querySelector("main").style.display = "none";
+            document.querySelector("#player").style.display = "none";
+        });
+
+        document.querySelector("#click-x").addEventListener("click", (e) => {
+            recognition.stop();
+            document.querySelector("#pop-screen").style.opacity = 0;
+            document.querySelector("#pop-screen").style.height = 0;
+            document.querySelector(".header").style.opacity = 1;
+            document.querySelector(".header").style.display = "flex";
+            document.querySelector(".header").style.justifyContent = "space-between";
+            document.querySelector(".header").style.alignItems = "center";
+            document.querySelector(".header").style.height = "60px";
+            document.querySelector(".header").style.padding = "15px";
+            document.querySelector("main").style.display = "block";
+            document.querySelector("#player").style.display = "block";
+            fix();
+        });
+    </script>
+
+
+    <main>
+        <section id="content">
+            <div class="column">
+
+                <div class="card">
+                    <img id="image-card">
+                    <h5 id="video-name"></h5>
+                    <h5 id="channel-name"></h5>
+                </div>
+
+                <div class="card">
+                    <img id="image-card">
+                    <h5 id="video-name"></h5>
+                    <h5 id="channel-name"></h5>
+                </div>
+
+                <div class="card">
+                    <img id="image-card">
+                    <h5 id="video-name"></h5>
+                    <h5 id="channel-name"></h5>
+                </div>
+
+                <div class="card">
+                    <img id="image-card">
+                    <h5 id="video-name"></h5>
+                    <h5 id="channel-name"></h5>
+                </div>
+            </div>
+
+            <div id=player>
+                <h1 id="h111">ENJOY!</h1>
+                <iframe id=iframe title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen id="video"></iframe>
+            </div>
+        </section>
+
+        <script>
+            let videoARR = [];
+            fix();
+
+            document.querySelector("#getSearch").addEventListener("click", (e) => {
+                videoARR.splice(0, videoARR.length);
+                let result = document.querySelector(".sMearch");
+                let card = document.querySelector(".card");
+                let s = document.querySelectorAll(".card");
+                console.log(result);
+                const url =
+                    `https://www.googleapis.com/youtube/v3/search?key=${"AIzaSyByYxKNo4O4zwZk7bQj8Wta6oF5VdnpzU4"}&type=video&part=snippet&q=${result.value}`;;
+                fetch(url).then(response => {
+                        return response.json();
+                    })
+                    .then(json => {
+                        let arr = {};
+                        console.log(json);
+                        let obj = json["items"];
+                        console.log(obj);
+                        let cards = document.querySelectorAll(".card");
+                        newc = cards;
+                        let images = document.querySelectorAll("#image-card");
+                        let videoName = document.querySelectorAll("#video-name");
+                        let channelName = document.querySelectorAll("#channel-name");
+                        for (var i = 0; i < cards.length; i++) {
+                            var url = `https://www.youtube.com/watch?v=${obj[i]["id"]["videoId"]}`;
+                            videoARR.push({
+                                url: url,
+                                id: obj[i]["id"]["videoId"]
+                            });
+                            images[i].src = obj[i]["snippet"]["thumbnails"]["medium"]["url"];
+                            videoName[i].innerText = obj[i]["snippet"]["title"];
+                            channelName[i].innerText = obj[i]["snippet"]["channelTitle"];
+                            cards[i].style.display = "block";
+                        }
+                    });
+            });
+
+            function on() {
+                document.querySelector("#h111").style.display = "block";
+            }
+
+            let newC = document.querySelectorAll("#image-card");
+            console.log(newC);
+            console.log("hey");
+            newC[0].addEventListener('click', (e) => {
+                let video = videoARR[0].id;
+                let src = `https://www.youtube.com/embed/${video}`;
+                document.querySelector("#iframe").src = src;
+                on();
+            });
+
+            newC[1].addEventListener('click', (e) => {
+                let video = videoARR[1].id;
+                let src = `https://www.youtube.com/embed/${video}`;
+                document.querySelector("#iframe").src = src;
+                on();
+            });
+
+            newC[2].addEventListener('click', (e) => {
+                let video = videoARR[2].id;
+                let src = `https://www.youtube.com/embed/${video}`;
+                document.querySelector("#iframe").src = src;
+                on();
+            });
+
+
+            newC[3].addEventListener('click', (e) => {
+                let video = videoARR[3].id;
+                let src = `https://www.youtube.com/embed/${video}`;
+                document.querySelector("#iframe").src = src;
+                on();
+            });
+        </script>
+    </main>
+</body>
+
+</html>
